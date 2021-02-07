@@ -5,7 +5,10 @@ You will also need a digital modem carrier with digital modem cards,
 the modems only work with the network modules the NM-1CE1T1-PRI works,
 That completes the Access Server side of the configuration. For the
 dial in side you will need some FXS ports (VIC-4FXS/DID) and another
-T1 card that provides a voice-port, I used a VWIC2-2MFT-T1/E1.
+T1 card that provides a voice-port, I used a VWIC2-2MFT-T1/E1. One
+last thing, you will need you make a T1 PRI crossover cable.
+
+https://www.kieranlane.com/2012/02/26/isdn-crossover-cable-pinout/
 
 Once the router is assembled and configured you can connect modems to
 the FXS ports and dial in with the phone number 5035551212 and get on
