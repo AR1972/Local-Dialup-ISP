@@ -6,7 +6,8 @@ the modems only work with the network modules the NM-1CE1T1-PRI works,
 That completes the Access Server side of the configuration. For the
 dial in side you will need some FXS ports (VIC-4FXS/DID) and another
 T1 card that provides a voice-port, I used a VWIC2-2MFT-T1/E1. One
-last thing, you will need you make a T1 PRI crossover cable.
+last thing, you will need you make a T1 PRI crossover cable to 
+connect the VWIC2-2MFT-T1/E1 to the NM-1CE1T1-PRI.
 
 https://www.kieranlane.com/2012/02/26/isdn-crossover-cable-pinout/
 
