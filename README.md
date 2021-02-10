@@ -1,4 +1,5 @@
-How to configure a Cisco router as a local dial up ISP
+How to configure a Cisco router as a local dial up ISP, or stupid
+things to do with enterprise network equipment when you are bored.
 
 You will need a Cisco router 2821, 2851, 3825, 3845, I used a 3825.
 You will also need a digital modem carrier with digital modem cards,
