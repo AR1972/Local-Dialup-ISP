@@ -378,8 +378,6 @@ interface Dialer10
  
  encapsulation ppp
  
- ip tcp header-compression ietf-format
- 
  dialer in-band
  
  dialer idle-timeout 900
@@ -392,8 +390,6 @@ interface Dialer10
  
  ppp multilink
  
- ip rtp header-compression ietf-format
-
 !
 
 interface Group-Async0
@@ -406,8 +402,6 @@ interface Group-Async0
  
  encapsulation ppp
  
- ip tcp header-compression ietf-format
- 
  dialer in-band
  
  dialer idle-timeout 900
@@ -415,8 +409,6 @@ interface Group-Async0
  dialer-group 5
  
  peer default ip address pool ASYNC
- 
- async dynamic routing
  
  async mode interactive
  
@@ -432,8 +424,6 @@ interface Group-Async0
  
  group-range 1/0 1/23
  
- ip rtp header-compression ietf-format
-
 !
 
 !
