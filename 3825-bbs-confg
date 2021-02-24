@@ -1,0 +1,291 @@
+
+!
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname 3825-NAS
+!
+boot-start-marker
+boot system flash:c3825-adventerprisek9_ivs-mz.151-4.M12a.bin
+boot-end-marker
+!
+!
+card type t1 0 0
+card type t1 2
+enable secret 5 [deleted]
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authentication login NO_AUTHEN none
+aaa authentication ppp default local
+aaa authorization network default local 
+!
+!
+!
+!
+!
+aaa session-id common
+!
+no network-clock-participate slot 2 
+network-clock-participate wic 0 
+network-clock-participate wic 1 
+!
+modem firmware slot 1 location flash:mica-modem-pw.2.9.5.0.bin
+modem country mica t1-default
+dot11 syslog
+ip source-route
+!
+ip cef
+!
+!
+no ip dhcp conflict logging
+ip dhcp excluded-address 10.0.10.1 10.0.10.50
+!
+ip dhcp pool NETWORK
+ network 10.0.10.0 255.255.255.0
+ default-router 10.0.10.1 
+ dns-server 10.0.10.1 
+ domain-name example.com
+!
+!
+ip domain name example.com
+ip name-server 192.168.1.1
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+async-bootp dns-server 192.168.1.1
+isdn switch-type primary-ni
+!
+modemcap entry MICA:MSC=&F&D2S0=0S29=6S21=3S34=18000S40=10S10=50
+voice-card 0
+!
+!
+!
+!
+!
+!
+!
+crypto pki token default removal timeout 0
+!
+!
+!
+!
+license udi pid CISCO3825 sn FTX1117A17B
+license accept end user agreement
+username adam privilege 15 secret 5 [deleted]
+username cisco password 7 14141B180F0B
+!
+redundancy
+!
+!
+controller T1 0/0/0
+ clock source internal
+ cablelength short 110
+ pri-group timeslots 1-24
+!
+controller T1 0/0/1
+ shutdown
+ cablelength long 0db
+!
+controller T1 2/0
+ framing ESF
+ linecode b8zs
+ cablelength short 110
+ pri-group timeslots 1-24
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.0.1.1 255.255.255.0
+!
+interface Loopback1
+ ip address 10.0.2.1 255.255.255.0
+!
+interface GigabitEthernet0/0
+ ip address dhcp
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address 10.0.10.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+ no cdp enable
+!
+interface Serial0/0/0:23
+ no ip address
+ encapsulation ppp
+ isdn switch-type primary-ni
+ isdn protocol-emulate network
+ isdn incoming-voice voice
+ isdn calling-number 5035552323
+ ppp multilink
+ no cdp enable
+!
+interface BRI0/1/0
+ no ip address
+ isdn switch-type basic-ni
+ isdn point-to-point-setup
+!
+interface BRI0/1/1
+ no ip address
+ isdn switch-type basic-ni
+ isdn point-to-point-setup
+!
+interface Serial2/0:23
+ no ip address
+ ip nat inside
+ ip virtual-reassembly in
+ encapsulation ppp
+ ip tcp header-compression
+ dialer rotary-group 10
+ dialer-group 5
+ isdn switch-type primary-ni
+ isdn incoming-voice modem
+ compress mppc
+ ppp multilink
+!
+interface Dialer10
+ ip unnumbered Loopback1
+ ip nat inside
+ ip virtual-reassembly in
+ encapsulation ppp
+ ip tcp header-compression
+ dialer in-band
+ dialer idle-timeout 900
+ dialer-group 5
+ peer default ip address pool ISDN
+ compress mppc
+ ppp authentication chap pap
+ ppp multilink
+!
+interface Group-Async0
+ ip unnumbered Loopback0
+ ip nat inside
+ ip virtual-reassembly in
+ encapsulation ppp
+ ip tcp header-compression
+ dialer in-band
+ dialer idle-timeout 900
+ dialer-group 5
+ peer default ip address pool ASYNC
+ async mode interactive
+ no fair-queue
+ no keepalive
+ compress mppc
+ ppp multilink
+ group-range 1/0 1/23
+!
+ip local pool ASYNC 10.0.1.200 10.0.1.254
+ip local pool ISDN 10.0.2.200 10.0.2.254
+ip default-gateway 192.168.1.1
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+ip dns server
+ip nat inside source list 100 interface GigabitEthernet0/0 overload
+!
+access-list 100 permit ip 10.0.10.0 0.0.0.255 any
+access-list 100 permit ip 10.0.2.0 0.0.0.255 any
+access-list 100 permit ip 10.0.1.0 0.0.0.255 any
+dialer-list 5 protocol ip list 100
+!
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+voice-port 0/0/0:23
+!
+voice-port 0/1/0
+!
+voice-port 0/1/1
+!
+voice-port 0/2/0
+!
+voice-port 0/2/1
+!
+voice-port 0/2/2
+!
+voice-port 0/2/3
+!
+voice-port 0/3/0
+!
+voice-port 0/3/1
+!
+voice-port 0/3/2
+!
+voice-port 0/3/3
+!
+!
+!
+mgcp profile default
+!
+!
+dial-peer voice 1000 pots
+ destination-pattern ..........
+ incoming called-number 5035551212
+ port 0/0/0:23
+!
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ login authentication NO_AUTHEN
+line aux 0
+line 1/0 1/23
+ no motd-banner
+ no exec-banner
+ no flush-at-activation
+ no vacant-message
+ login authentication NO_AUTHEN
+ modem Dialin
+ modem autoconfigure type MICA
+ autocommand  telnet 10.0.10.10 /stream /quiet
+ transport preferred none
+ transport input all
+ transport output pad telnet rlogin udptn
+ escape-character NONE
+ telnet transparent
+ autohangup
+ dispatch-timeout 250
+line vty 0 4
+ exec-timeout 0 0
+ transport input ssh
+!
+scheduler allocate 20000 1000
+ntp server 192.168.1.1
+end
