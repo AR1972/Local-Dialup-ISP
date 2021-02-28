@@ -73,7 +73,10 @@ PID: NM-1CE1T1-PRI=    , VID: V01 , SN: FOC11475K2A
 
 [ROUTER CONFIG]
 
-3825-nas-config: enables dial in connections to use the LAN and internet
+3825-nas-confg: enables dial in connections to use the LAN and internet
 
-3825-bbs-config: terminates dial in connections to a telnet server such
+3825-bbs-confg: terminates dial in connections to a telnet server such
                  such as a BBS
+
+as5300-confg  : config for a Cisco AS5300 allows multilink ppp via modem
+                and pooing modems for various services
