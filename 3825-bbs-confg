@@ -1,11 +1,14 @@
 
 !
+! Last configuration change at 22:45:26 UTC Sun Feb 28 2021
+! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
+! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
 service password-encryption
 !
-hostname 3825-NAS
+hostname 3825-BBS
 !
 boot-start-marker
 boot system flash:c3825-adventerprisek9_ivs-mz.151-4.M12a.bin
@@ -34,7 +37,6 @@ no network-clock-participate slot 2
 network-clock-participate wic 0 
 network-clock-participate wic 1 
 !
-modem firmware slot 1 location flash:mica-modem-pw.2.9.5.0.bin
 modem country mica t1-default
 dot11 syslog
 ip source-route
@@ -43,12 +45,12 @@ ip cef
 !
 !
 no ip dhcp conflict logging
-ip dhcp excluded-address 10.0.10.1 10.0.10.50
+ip dhcp excluded-address 10.0.3.1 10.0.3.50
 !
-ip dhcp pool NETWORK
- network 10.0.10.0 255.255.255.0
- default-router 10.0.10.1 
- dns-server 10.0.10.1 
+ip dhcp pool LAN
+ network 10.0.3.0 255.255.255.0
+ default-router 10.0.3.1 
+ dns-server 10.0.3.1 
  domain-name example.com
 !
 !
@@ -56,6 +58,7 @@ ip domain name example.com
 ip name-server 192.168.1.1
 no ipv6 cef
 !
+multilink virtual-template 1
 multilink bundle-name authenticated
 !
 !
@@ -64,7 +67,6 @@ multilink bundle-name authenticated
 async-bootp dns-server 192.168.1.1
 isdn switch-type primary-ni
 !
-modemcap entry MICA:MSC=&F&D2S0=0S29=6S21=3S34=18000S40=10S10=50
 voice-card 0
 !
 !
@@ -92,8 +94,9 @@ controller T1 0/0/0
  pri-group timeslots 1-24
 !
 controller T1 0/0/1
- shutdown
- cablelength long 0db
+ clock source internal
+ cablelength short 110
+ pri-group timeslots 1-24
 !
 controller T1 2/0
  framing ESF
@@ -124,7 +127,7 @@ interface GigabitEthernet0/0
  media-type rj45
 !
 interface GigabitEthernet0/1
- ip address 10.0.10.1 255.255.255.0
+ ip address 10.0.3.1 255.255.255.0
  ip nat inside
  ip virtual-reassembly in
  duplex auto
@@ -138,7 +141,17 @@ interface Serial0/0/0:23
  isdn switch-type primary-ni
  isdn protocol-emulate network
  isdn incoming-voice voice
- isdn calling-number 5035552323
+ isdn calling-number 5551000
+ ppp multilink
+ no cdp enable
+!
+interface Serial0/0/1:23
+ no ip address
+ encapsulation ppp
+ isdn switch-type primary-ni
+ isdn protocol-emulate network
+ isdn incoming-voice voice
+ isdn calling-number 5551000
  ppp multilink
  no cdp enable
 !
@@ -158,14 +171,22 @@ interface Serial2/0:23
  ip virtual-reassembly in
  encapsulation ppp
  ip tcp header-compression
- dialer rotary-group 10
- dialer-group 5
+ dialer rotary-group 0
+ dialer-group 1
  isdn switch-type primary-ni
  isdn incoming-voice modem
  compress mppc
  ppp multilink
 !
-interface Dialer10
+interface Virtual-Template1
+ ip unnumbered Loopback0
+ ip nat inside
+ ip virtual-reassembly in
+ ip tcp header-compression
+ compress mppc
+ ppp multilink
+!
+interface Dialer0
  ip unnumbered Loopback1
  ip nat inside
  ip virtual-reassembly in
@@ -173,7 +194,7 @@ interface Dialer10
  ip tcp header-compression
  dialer in-band
  dialer idle-timeout 900
- dialer-group 5
+ dialer-group 1
  peer default ip address pool ISDN
  compress mppc
  ppp authentication chap pap
@@ -187,7 +208,7 @@ interface Group-Async0
  ip tcp header-compression
  dialer in-band
  dialer idle-timeout 900
- dialer-group 5
+ dialer-group 1
  peer default ip address pool ASYNC
  async mode interactive
  no fair-queue
@@ -207,10 +228,10 @@ no ip http secure-server
 ip dns server
 ip nat inside source list 100 interface GigabitEthernet0/0 overload
 !
-access-list 100 permit ip 10.0.10.0 0.0.0.255 any
-access-list 100 permit ip 10.0.2.0 0.0.0.255 any
 access-list 100 permit ip 10.0.1.0 0.0.0.255 any
-dialer-list 5 protocol ip list 100
+access-list 100 permit ip 10.0.2.0 0.0.0.255 any
+access-list 100 permit ip 10.0.3.0 0.0.0.255 any
+dialer-list 1 protocol ip list 100
 !
 !
 !
@@ -227,6 +248,8 @@ voice-port 0/0/0:23
 voice-port 0/1/0
 !
 voice-port 0/1/1
+!
+voice-port 0/0/1:23
 !
 voice-port 0/2/0
 !
@@ -249,9 +272,16 @@ voice-port 0/3/3
 mgcp profile default
 !
 !
-dial-peer voice 1000 pots
- destination-pattern ..........
- incoming called-number 5035551212
+dial-peer voice 1 pots
+ destination-pattern (555)+2221
+ incoming called-number 5552221
+ no digit-strip
+ port 0/0/0:23
+!
+dial-peer voice 2 pots
+ destination-pattern (555)+2231
+ incoming called-number 5552231
+ no digit-strip
  port 0/0/0:23
 !
 !
@@ -273,8 +303,8 @@ line 1/0 1/23
  no vacant-message
  login authentication NO_AUTHEN
  modem Dialin
- modem autoconfigure type MICA
- autocommand  telnet 10.0.10.10 /stream /quiet
+ modem autoconfigure discovery
+ autocommand  telnet 10.0.3.10 /stream /quiet
  transport preferred none
  transport input all
  transport output pad telnet rlogin udptn
