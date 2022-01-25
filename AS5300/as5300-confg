@@ -1,0 +1,220 @@
+
+!
+version 12.3
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+!
+hostname as5300
+!
+boot-start-marker
+boot system flash:c5300-jk9s-mz.123-26.bin
+boot-end-marker
+!
+enable password <deleted>
+!
+spe 1/0 1/7
+ firmware location system:/ucode/mica_port_firmware
+!
+!
+resource-pool disable
+!
+modem-pool BBS
+ pool-range 1-10
+ called-number 5552231 max-conn 10
+!
+modem-pool INTERNET
+ pool-range 11-48
+ called-number 5552221 max-conn 38
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authentication login NO_AUTHEN none
+aaa authentication ppp default local
+aaa session-id common
+ip subnet-zero
+ip domain name example.com
+no ip dhcp conflict logging
+!
+multilink virtual-template 1
+async-bootp subnet-mask 255.255.255.0
+async-bootp gateway 10.0.3.1
+async-bootp dns-server 10.0.3.1
+!
+isdn switch-type primary-ni
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username adam privilege 15 password 0 <deleted>
+username cisco password 0 cisco
+!
+!
+controller T1 0
+ framing esf
+ clock source line primary
+ linecode b8zs
+ pri-group timeslots 1-24
+!
+controller T1 1
+ framing esf
+ clock source line secondary 1
+ linecode b8zs
+ pri-group timeslots 1-24
+!
+controller T1 2
+ framing sf
+ linecode ami
+!
+controller T1 3
+ framing sf
+ linecode ami
+!
+! 
+!
+!
+!
+interface Loopback1
+ ip address 10.0.11.1 255.255.255.0
+ ip nat inside
+!
+interface Loopback2
+ ip address 10.0.12.1 255.255.255.0
+ ip nat inside
+!
+interface Ethernet0
+ ip address 10.0.13.1 255.255.255.0
+ ip nat inside
+!
+interface Virtual-Template1
+ ip unnumbered Loopback1
+ ip nat inside
+ ip tcp header-compression
+ peer default ip address pool ASYNC
+ compress mppc
+ ppp authentication chap
+ ppp multilink
+!
+interface Serial0:23
+ no ip address
+ ip nat inside
+ encapsulation ppp
+ ip mroute-cache
+ dialer rotary-group 1
+ dialer-group 1
+ isdn switch-type primary-ni
+ isdn incoming-voice modem
+!
+interface Serial1:23
+ no ip address
+ ip nat inside
+ encapsulation ppp
+ ip mroute-cache
+ dialer rotary-group 1
+ dialer-group 1
+ isdn switch-type primary-ni
+ isdn incoming-voice modem
+!
+interface FastEthernet0
+ ip address dhcp
+ ip nat outside
+ duplex auto
+ speed auto
+!
+interface Group-Async1
+ ip unnumbered Loopback1
+ ip nat inside
+ encapsulation slip
+ ip tcp header-compression
+ dialer in-band
+ dialer idle-timeout 900
+ dialer-group 1
+ async mode interactive
+ peer default ip address pool ASYNC
+ no fair-queue
+ group-range 1 10
+!
+interface Group-Async2
+ ip unnumbered Loopback1
+ ip nat inside
+ encapsulation ppp
+ ip tcp header-compression
+ dialer in-band
+ dialer idle-timeout 900
+ dialer-group 1
+ async mode dedicated
+ peer default ip address pool ASYNC
+ compress mppc
+ no fair-queue
+ ppp authentication chap
+ ppp multilink
+ group-range 11 48
+!
+interface Dialer1
+ ip unnumbered Loopback2
+ ip nat inside
+ encapsulation ppp
+ dialer in-band
+ dialer idle-timeout 900
+ dialer-group 1
+ peer default ip address pool ISDN
+ ppp authentication chap
+ ppp multilink
+!
+ip local pool ASYNC 10.0.11.2 10.0.11.254
+ip local pool ISDN 10.0.12.2 10.0.12.254
+ip nat inside source list 100 interface FastEthernet0 overload
+ip classless
+no ip http server
+no ip http secure-server
+!
+!
+access-list 100 permit ip 10.0.11.0 0.0.0.255 any
+access-list 100 permit ip 10.0.12.0 0.0.0.255 any
+access-list 100 permit ip 10.0.13.0 0.0.0.255 any
+dialer-list 1 protocol ip list 100
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ login authentication NO_AUTHEN
+line 1 10
+ no motd-banner
+ no exec-banner
+ no flush-at-activation
+ no vacant-message
+ login authentication NO_AUTHEN
+ modem Dialin
+ modem autoconfigure discovery
+ autocommand  telnet 10.0.3.10 /stream /quiet
+ transport preferred none
+ transport input all
+ transport output pad telnet rlogin udptn
+ escape-character NONE
+ telnet transparent
+ autohangup
+ dispatch-timeout 250
+line 11 48
+ modem Dialin
+ modem autoconfigure discovery
+ transport input all
+line aux 0
+line vty 0 4
+ password cisco
+!
+end
