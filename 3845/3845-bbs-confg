@@ -1,23 +1,19 @@
 
 !
-! Last configuration change at 22:45:26 UTC Sun Feb 28 2021
-! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
-! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
-service password-encryption
+no service password-encryption
 !
-hostname 3825-BBS
+hostname 3845-BBS
 !
 boot-start-marker
-boot system flash:c3825-adventerprisek9_ivs-mz.151-4.M12a.bin
+boot system flash:c3845-adventerprisek9_ivs-mz.151-4.M12a.bin
 boot-end-marker
 !
 !
 card type t1 0 0
-card type t1 2
-enable secret 5 [deleted]
+card type t1 1
 !
 aaa new-model
 !
@@ -33,9 +29,8 @@ aaa authorization network default local
 !
 aaa session-id common
 !
-no network-clock-participate slot 2 
+no network-clock-participate slot 1 
 network-clock-participate wic 0 
-network-clock-participate wic 1 
 !
 modem country mica t1-default
 dot11 syslog
@@ -58,7 +53,6 @@ ip domain name example.com
 ip name-server 192.168.1.1
 no ipv6 cef
 !
-multilink virtual-template 1
 multilink bundle-name authenticated
 !
 !
@@ -80,10 +74,9 @@ crypto pki token default removal timeout 0
 !
 !
 !
-license udi pid CISCO3825 sn FTX1117A17B
+license udi pid CISCO3845-MB sn FOC10483JQH
 license accept end user agreement
-username adam privilege 15 secret 5 [deleted]
-username cisco password 7 14141B180F0B
+username cisco password 0 cisco
 !
 redundancy
 !
@@ -98,7 +91,7 @@ controller T1 0/0/1
  cablelength short 110
  pri-group timeslots 1-24
 !
-controller T1 2/0
+controller T1 1/0
  framing ESF
  linecode b8zs
  cablelength short 110
@@ -155,17 +148,7 @@ interface Serial0/0/1:23
  ppp multilink
  no cdp enable
 !
-interface BRI0/1/0
- no ip address
- isdn switch-type basic-ni
- isdn point-to-point-setup
-!
-interface BRI0/1/1
- no ip address
- isdn switch-type basic-ni
- isdn point-to-point-setup
-!
-interface Serial2/0:23
+interface Serial1/0:23
  no ip address
  ip nat inside
  ip virtual-reassembly in
@@ -178,13 +161,14 @@ interface Serial2/0:23
  compress mppc
  ppp multilink
 !
-interface Virtual-Template1
- ip unnumbered Loopback0
+interface GigabitEthernet3/0
+ ip address 10.0.4.1 255.255.255.0
  ip nat inside
  ip virtual-reassembly in
- ip tcp header-compression
- compress mppc
- ppp multilink
+ duplex auto
+ speed auto
+ media-type rj45
+ no cdp enable
 !
 interface Dialer0
  ip unnumbered Loopback1
@@ -214,8 +198,9 @@ interface Group-Async0
  no fair-queue
  no keepalive
  compress mppc
+ ppp authentication chap pap
  ppp multilink
- group-range 1/0 1/23
+ group-range 2/0 2/23
 !
 ip local pool ASYNC 10.0.1.200 10.0.1.254
 ip local pool ISDN 10.0.2.200 10.0.2.254
@@ -231,7 +216,32 @@ ip nat inside source list 100 interface GigabitEthernet0/0 overload
 access-list 100 permit ip 10.0.1.0 0.0.0.255 any
 access-list 100 permit ip 10.0.2.0 0.0.0.255 any
 access-list 100 permit ip 10.0.3.0 0.0.0.255 any
+access-list 100 permit ip 10.0.4.0 0.0.0.255 any
 dialer-list 1 protocol ip list 100
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 !
@@ -245,27 +255,55 @@ control-plane
 !
 voice-port 0/0/0:23
 !
-voice-port 0/1/0
-!
-voice-port 0/1/1
-!
 voice-port 0/0/1:23
 !
-voice-port 0/2/0
+voice-port 4/0/0
 !
-voice-port 0/2/1
+voice-port 4/0/1
 !
-voice-port 0/2/2
+voice-port 4/0/2
 !
-voice-port 0/2/3
+voice-port 4/0/3
 !
-voice-port 0/3/0
+voice-port 4/0/4
 !
-voice-port 0/3/1
+voice-port 4/0/5
 !
-voice-port 0/3/2
+voice-port 4/0/6
 !
-voice-port 0/3/3
+voice-port 4/0/7
+!
+voice-port 4/0/8
+!
+voice-port 4/0/9
+!
+voice-port 4/0/10
+!
+voice-port 4/0/11
+!
+voice-port 4/0/12
+!
+voice-port 4/0/13
+!
+voice-port 4/0/14
+!
+voice-port 4/0/15
+!
+voice-port 4/0/16
+!
+voice-port 4/0/17
+!
+voice-port 4/0/18
+!
+voice-port 4/0/19
+!
+voice-port 4/0/20
+!
+voice-port 4/0/21
+!
+voice-port 4/0/22
+!
+voice-port 4/0/23
 !
 !
 !
@@ -275,12 +313,6 @@ mgcp profile default
 dial-peer voice 1 pots
  destination-pattern (555)+2221
  incoming called-number 5552221
- no digit-strip
- port 0/0/0:23
-!
-dial-peer voice 2 pots
- destination-pattern (555)+2231
- incoming called-number 5552231
  no digit-strip
  port 0/0/0:23
 !
@@ -296,7 +328,7 @@ line con 0
  exec-timeout 0 0
  login authentication NO_AUTHEN
 line aux 0
-line 1/0 1/23
+line 2/0 2/23
  no motd-banner
  no exec-banner
  no flush-at-activation
@@ -304,7 +336,7 @@ line 1/0 1/23
  login authentication NO_AUTHEN
  modem Dialin
  modem autoconfigure discovery
- autocommand  telnet 10.0.3.10 /stream /quiet
+ autocommand  telnet 10.0.4.10 /stream /quiet
  transport preferred none
  transport input all
  transport output pad telnet rlogin udptn
@@ -312,6 +344,12 @@ line 1/0 1/23
  telnet transparent
  autohangup
  dispatch-timeout 250
+line 194
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output lat pad telnet rlogin lapb-ta mop udptn v120 ssh
 line vty 0 4
  exec-timeout 0 0
  transport input ssh

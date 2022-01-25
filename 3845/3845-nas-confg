@@ -1,8 +1,5 @@
 
 !
-! Last configuration change at 01:58:14 UTC Tue Jan 25 2022
-! NVRAM config last updated at 02:03:03 UTC Tue Jan 25 2022 by adam
-! NVRAM config last updated at 02:03:03 UTC Tue Jan 25 2022 by adam
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
@@ -43,6 +40,7 @@ ip cef
 !
 !
 no ip dhcp conflict logging
+ip dhcp excluded-address 10.0.3.1 10.0.3.50
 !
 ip dhcp pool LAN
  network 10.0.3.0 255.255.255.0
@@ -63,7 +61,6 @@ multilink bundle-name authenticated
 async-bootp dns-server 192.168.1.1
 isdn switch-type primary-ni
 !
-modemcap entry MICA:MSC=&F&D2S0=0S29=6S21=3S34=18000S40=10S10=50
 voice-card 0
 !
 !
@@ -126,7 +123,6 @@ interface GigabitEthernet0/1
  ip address 10.0.3.1 255.255.255.0
  ip nat inside
  ip virtual-reassembly in
- shutdown
  duplex auto
  speed auto
  media-type rj45
@@ -169,7 +165,9 @@ interface GigabitEthernet3/0
  ip address 10.0.4.1 255.255.255.0
  ip nat inside
  ip virtual-reassembly in
- shutdown
+ duplex auto
+ speed auto
+ media-type rj45
  no cdp enable
 !
 interface Dialer0
@@ -194,7 +192,7 @@ interface Group-Async0
  ip tcp header-compression
  dialer in-band
  dialer idle-timeout 900
- dialer-group 5
+ dialer-group 1
  peer default ip address pool ASYNC
  async mode interactive
  no fair-queue
@@ -248,7 +246,6 @@ dialer-list 1 protocol ip list 100
 !
 !
 !
-snmp-server ifindex persist
 !
 !
 !
@@ -333,7 +330,7 @@ line con 0
 line aux 0
 line 2/0 2/23
  modem Dialin
- modem autoconfigure type MICA
+ modem autoconfigure discovery
  transport input all
  autoselect during-login
  autoselect ppp

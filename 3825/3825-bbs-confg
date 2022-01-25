@@ -1,12 +1,9 @@
 
 !
-! Last configuration change at 22:45:26 UTC Sun Feb 28 2021
-! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
-! NVRAM config last updated at 22:45:27 UTC Sun Feb 28 2021
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
-service password-encryption
+no service password-encryption
 !
 hostname 3825-BBS
 !
@@ -17,7 +14,6 @@ boot-end-marker
 !
 card type t1 0 0
 card type t1 2
-enable secret 5 [deleted]
 !
 aaa new-model
 !
@@ -58,8 +54,6 @@ ip domain name example.com
 ip name-server 192.168.1.1
 no ipv6 cef
 !
-multilink virtual-template 1
-multilink bundle-name authenticated
 !
 !
 !
@@ -82,8 +76,7 @@ crypto pki token default removal timeout 0
 !
 license udi pid CISCO3825 sn FTX1117A17B
 license accept end user agreement
-username adam privilege 15 secret 5 [deleted]
-username cisco password 7 14141B180F0B
+username cisco password 0 cisco
 !
 redundancy
 !
@@ -155,16 +148,6 @@ interface Serial0/0/1:23
  ppp multilink
  no cdp enable
 !
-interface BRI0/1/0
- no ip address
- isdn switch-type basic-ni
- isdn point-to-point-setup
-!
-interface BRI0/1/1
- no ip address
- isdn switch-type basic-ni
- isdn point-to-point-setup
-!
 interface Serial2/0:23
  no ip address
  ip nat inside
@@ -175,14 +158,6 @@ interface Serial2/0:23
  dialer-group 1
  isdn switch-type primary-ni
  isdn incoming-voice modem
- compress mppc
- ppp multilink
-!
-interface Virtual-Template1
- ip unnumbered Loopback0
- ip nat inside
- ip virtual-reassembly in
- ip tcp header-compression
  compress mppc
  ppp multilink
 !
@@ -214,6 +189,7 @@ interface Group-Async0
  no fair-queue
  no keepalive
  compress mppc
+ ppp authentication chap pap
  ppp multilink
  group-range 1/0 1/23
 !
@@ -275,12 +251,6 @@ mgcp profile default
 dial-peer voice 1 pots
  destination-pattern (555)+2221
  incoming called-number 5552221
- no digit-strip
- port 0/0/0:23
-!
-dial-peer voice 2 pots
- destination-pattern (555)+2231
- incoming called-number 5552231
  no digit-strip
  port 0/0/0:23
 !
