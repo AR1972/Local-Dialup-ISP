@@ -16,7 +16,8 @@ https://www.kieranlane.com/2012/02/26/isdn-crossover-cable-pinout/
 
 Once the router is assembled and configured you can connect modems to
 the FXS ports and dial in with the phone number 5552221 and get on
-line using the username cisco and the password cisco.
+line using the username cisco and the password cisco, enable password
+is cisco.
 
 [ROUTER INVENTORY]
 
@@ -76,7 +77,7 @@ PID: NM-1CE1T1-PRI=    , VID: V01 , SN: FOC11475K2A
 3825-nas-confg: enables dial in connections to use the LAN and internet
 
 3825-bbs-confg: terminates dial in connections to a telnet server such
-                 such as a BBS
+                such as a BBS
 
 as5300-confg  : config for a Cisco AS5300 allows multilink ppp via modem
                 and pooing modems for various services
