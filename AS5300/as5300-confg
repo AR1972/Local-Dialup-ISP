@@ -11,7 +11,6 @@ boot-start-marker
 boot system flash:c5300-jk9s-mz.123-26.bin
 boot-end-marker
 !
-enable password <deleted>
 !
 spe 1/0 1/7
  firmware location system:/ucode/mica_port_firmware
@@ -55,7 +54,6 @@ isdn switch-type primary-ni
 !
 !
 !
-username adam privilege 15 password 0 <deleted>
 username cisco password 0 cisco
 !
 !
