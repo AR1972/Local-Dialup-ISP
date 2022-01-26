@@ -1,5 +1,6 @@
 
 !
+! Last configuration change at 01:12:14 UTC Wed Jan 26 2022
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
@@ -14,6 +15,7 @@ boot-end-marker
 !
 card type t1 0 0
 card type t1 1
+enable secret 5 $1$Hr4C$4NywGz2hYuMNurNJ3kn1e1
 !
 aaa new-model
 !
@@ -153,7 +155,6 @@ interface Serial1/0:23
  ip nat inside
  ip virtual-reassembly in
  encapsulation ppp
- ip tcp header-compression
  dialer rotary-group 0
  dialer-group 1
  isdn switch-type primary-ni
@@ -162,13 +163,7 @@ interface Serial1/0:23
  ppp multilink
 !
 interface GigabitEthernet3/0
- ip address 10.0.4.1 255.255.255.0
- ip nat inside
- ip virtual-reassembly in
- duplex auto
- speed auto
- media-type rj45
- no cdp enable
+ shutdown
 !
 interface Dialer0
  ip unnumbered Loopback1
@@ -336,7 +331,7 @@ line 2/0 2/23
  login authentication NO_AUTHEN
  modem Dialin
  modem autoconfigure discovery
- autocommand  telnet 10.0.4.10 /stream /quiet
+ autocommand  telnet 10.0.3.10 /stream /quiet
  transport preferred none
  transport input all
  transport output pad telnet rlogin udptn

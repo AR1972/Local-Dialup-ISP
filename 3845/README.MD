@@ -4,6 +4,11 @@ Configuration files for a Cisco 3845 router with the following
 cards installed. This configuration can service 23 simultaneous 
 calls.
 
+phone: 555-2221
+login: cisco
+pass: cisco
+enable: cisco
+
 ========================================================================
 
 NAME: "3845 chassis", DESCR: "3845 chassis"
