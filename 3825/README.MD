@@ -1,7 +1,12 @@
 ========================================================================
 
-Configuration files for a Cosco 3825 router with the following
+Configuration files for a Cisco 3825 router with the following
 cards installed.
+
+phone: 555-2221
+login: cisco
+pass: cisco
+enable: cisco
 
 ========================================================================
 
