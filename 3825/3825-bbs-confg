@@ -1,5 +1,6 @@
 
 !
+! Last configuration change at 02:40:59 UTC Thu Jan 27 2022
 version 15.1
 service timestamps debug datetime msec
 service timestamps log datetime msec
@@ -14,6 +15,7 @@ boot-end-marker
 !
 card type t1 0 0
 card type t1 2
+enable secret 0 cisco
 !
 aaa new-model
 !
@@ -31,7 +33,6 @@ aaa session-id common
 !
 no network-clock-participate slot 2 
 network-clock-participate wic 0 
-network-clock-participate wic 1 
 !
 modem country mica t1-default
 dot11 syslog
@@ -54,6 +55,7 @@ ip domain name example.com
 ip name-server 192.168.1.1
 no ipv6 cef
 !
+multilink bundle-name authenticated
 !
 !
 !
@@ -223,6 +225,10 @@ voice-port 0/0/0:23
 voice-port 0/1/0
 !
 voice-port 0/1/1
+!
+voice-port 0/1/2
+!
+voice-port 0/1/3
 !
 voice-port 0/0/1:23
 !

@@ -15,7 +15,7 @@ boot-end-marker
 !
 card type t1 0 0
 card type t1 1
-enable secret 5 $1$diNE$Pk.OJgNVl.gYoTMFwl/pN.
+enable secret 0 cisco
 !
 aaa new-model
 !
